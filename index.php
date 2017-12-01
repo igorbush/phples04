@@ -119,7 +119,7 @@ $logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
 		<input class="search" type="submit" value="узнать погоду">
 		</form>
 		<h2>Сегодня: <?= date("d.m.Y H:i") ?></h2>
-		<?php if ($city != NULL): ?>
+		<?php if (!is_null($city) && !empty($_GET)): ?>
 				<h2>Город: <?= $city ?></h2>
 				<div class='main-temp'>
 					<?= $logo ?>
