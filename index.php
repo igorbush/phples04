@@ -1,6 +1,8 @@
 <?php 
 error_reporting( E_ERROR );
 $appid = "8499bc10de19c0cbe31d89994b60834a";
+if (empty($_GET)) 
+{
 $city = $_GET['value'];
 $json_weather = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=$city&lang=ru&units=metric&appid=$appid");
 $data = json_decode($json_weather, true);
@@ -11,6 +13,7 @@ $wind_speed = $data[wind][speed];
 $clouds = $data[clouds][all];
 $pic = $data[weather][0][icon];
 $logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
+}
 ?>
 
 <!DOCTYPE html>
@@ -119,7 +122,7 @@ $logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
 		<input class="search" type="submit" value="узнать погоду">
 		</form>
 		<h2>Сегодня: <?= date("d.m.Y H:i") ?></h2>
-		<?php if (!is_null($city) && !empty($_GET)): ?>
+		<?php if (!is_null($city)): ?>
 				<h2>Город: <?= $city ?></h2>
 				<div class='main-temp'>
 					<?= $logo ?>
