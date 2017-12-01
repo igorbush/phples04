@@ -1,14 +1,15 @@
 <?php 
 error_reporting( E_ERROR );
+$appid = "8499bc10de19c0cbe31d89994b60834a";
 $city = $_GET['value'];
-$json_weather = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=$city&lang=ru&units=metric&appid=8499bc10de19c0cbe31d89994b60834a");
-$data = json_decode($json_weather);
-$temp = $data->main->temp;
-$desc = $data->weather[0]->description;
-$hum = $data->main->humidity;
-$wind_speed = $data->wind->speed;
-$clouds = $data->clouds->all;
-$pic = $data->weather[0]->icon;
+$json_weather = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=$city&lang=ru&units=metric&appid=$appid");
+$data = json_decode($json_weather, true);
+$temp = $data[main][temp];
+$desc = $data[weather][0][description];
+$hum = $data[main][humidity];
+$wind_speed = $data[wind][speed];
+$clouds = $data[clouds][all];
+$pic = $data[weather][0][icon];
 $logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
 ?>
 
@@ -117,21 +118,18 @@ $logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
 		<input class="city" type="text" placeholder="Введите Город" name="value">
 		<input class="search" type="submit" value="узнать погоду">
 		</form>
-		<h2>Сегодня: <?php echo $today = date("d.m.Y H:i"); ?></h2>
-		<?php 
-			if ($city != NULL)
-			{
-				echo "<h2>Город: " . $city . "</h2>";
-				echo "<div class='main-temp'>";
-				echo $logo;
-				echo "<p class='temp'>" . round($temp) . "<sup> o</sup>C</p>";
-				echo "<p class='desc'>" . $desc . "</p>";
-				echo "</div>";
-				echo "<p class='other'>Влажность: " . $hum . " %</p>";
-				echo "<p class='other'>Скорость ветра: " . $wind_speed . " м/с</p>";
-				echo "<p class='other'>Облачность: " . $clouds . " %</p>";
-			} 
-		?>
+		<h2>Сегодня: <?= date("d.m.Y H:i") ?></h2>
+		<?php if ($city != NULL): ?>
+				<h2>Город: <?= $city ?></h2>
+				<div class='main-temp'>
+					<?= $logo ?>
+					<p class='temp'><?= round($temp) ?><sup> o</sup>C</p>
+					<p class='desc'><?= $desc ?></p>
+				</div>
+				<p class='other'>Влажность: <?= $hum ?> %</p>
+				<p class='other'>Скорость ветра: <?= $wind_speed ?> м/с</p>
+				<p class='other'>Облачность: <?= $clouds ?> %</p>
+		<?php endif; ?>
 	</div>
 </body>
 </html
