@@ -1,10 +1,19 @@
 <?php 
-error_reporting( E_ERROR );
+$file = "cache.cache";
+if (file_exists($file)){
+	$cache_time = 300;
+	if ((time() - $cache_time) < filemtime($file)){
+		echo file_get_contents($file);
+		exit;
+	}
+}
+ob_start();
+// error_reporting( E_ERROR );
 $appid = "8499bc10de19c0cbe31d89994b60834a";
-if (empty($_GET)) 
+if (!empty($_GET['city'])) 
 {
-$city = $_GET['value'];
-$json_weather = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=$city&lang=ru&units=metric&appid=$appid");
+$city_get = $_GET['value'];
+$json_weather = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=$city_get&lang=ru&units=metric&appid=$appid");
 $data = json_decode($json_weather, true);
 $temp = $data[main][temp];
 $desc = $data[weather][0][description];
@@ -122,7 +131,7 @@ $logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
 		<input class="search" type="submit" value="узнать погоду">
 		</form>
 		<h2>Сегодня: <?= date("d.m.Y H:i") ?></h2>
-		<?php if (!is_null($city)): ?>
+		<?php if (!is_null($city_get)): ?>
 				<h2>Город: <?= $city ?></h2>
 				<div class='main-temp'>
 					<?= $logo ?>
@@ -135,4 +144,12 @@ $logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
 		<?php endif; ?>
 	</div>
 </body>
-</html
+</html>
+<?php 
+	$write_cache = ob_get_contents();
+	ob_end_flush();
+	$file_name = "cache.cache";
+	$a = fopen($file_name, "w");
+	fwrite($a, $write_cache);
+	fclose($a);
+ ?>
