@@ -1,28 +1,24 @@
 <?php 
-$file = "cache.cache";
-if (file_exists($file)){
-	$cache_time = 300;
-	if ((time() - $cache_time) < filemtime($file)){
-		echo file_get_contents($file);
-		exit;
+	error_reporting( E_ERROR );
+	if (empty($_GET['city'])) {
+	$appid = "8499bc10de19c0cbe31d89994b60834a";
+	$city_get = $_GET['value'];
+	if (file_exists('cache.txt') && (time() - 300) < filemtime('cache.txt')) {
+		$json_weather = file_get_contents('cache.txt');
 	}
-}
-ob_start();
-// error_reporting( E_ERROR );
-$appid = "8499bc10de19c0cbe31d89994b60834a";
-if (!empty($_GET['city'])) 
-{
-$city_get = $_GET['value'];
-$json_weather = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=$city_get&lang=ru&units=metric&appid=$appid");
-$data = json_decode($json_weather, true);
-$temp = $data[main][temp];
-$desc = $data[weather][0][description];
-$hum = $data[main][humidity];
-$wind_speed = $data[wind][speed];
-$clouds = $data[clouds][all];
-$pic = $data[weather][0][icon];
-$logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
-}
+	else {
+		$json_weather = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=$city_get&lang=ru&units=metric&appid=$appid");
+		file_put_contents('cache.txt', $json_weather);
+	}
+	$data = json_decode($json_weather, true);
+	$temp = $data[main][temp];
+	$desc = $data[weather][0][description];
+	$hum = $data[main][humidity];
+	$wind_speed = $data[wind][speed];
+	$clouds = $data[clouds][all];
+	$pic = $data[weather][0][icon];
+	$logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
+	}
 ?>
 
 <!DOCTYPE html>
@@ -33,7 +29,7 @@ $logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
 	<link href="https://fonts.googleapis.com/css?family=Barlow+Semi+Condensed:400,700|Lato:400,700&amp;subset=latin-ext" rel="stylesheet">
 	<style>
 		* {
-			box-sizing: boreder-box;
+			
 			margin: 0;
 			padding: 0;
 			font-family: 'Lato', sans-serif;
@@ -53,7 +49,6 @@ $logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
 			background-color: rgba(83, 83, 83, 0.5);
 			text-align: center;
 		}
-
 		h1 {
 			margin-bottom: 20px;
 			font: 700 50px 'Barlow Semi Condensed', sans-serif;
@@ -132,7 +127,7 @@ $logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
 		</form>
 		<h2>Сегодня: <?= date("d.m.Y H:i") ?></h2>
 		<?php if (!is_null($city_get)): ?>
-				<h2>Город: <?= $city ?></h2>
+				<h2>Город: <?= $city_get ?></h2>
 				<div class='main-temp'>
 					<?= $logo ?>
 					<p class='temp'><?= round($temp) ?><sup> o</sup>C</p>
@@ -145,11 +140,3 @@ $logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
 	</div>
 </body>
 </html>
-<?php 
-	$write_cache = ob_get_contents();
-	ob_end_flush();
-	$file_name = "cache.cache";
-	$a = fopen($file_name, "w");
-	fwrite($a, $write_cache);
-	fclose($a);
- ?>
