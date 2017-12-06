@@ -1,23 +1,26 @@
 <?php 
 	error_reporting( E_ERROR );
-	if (empty($_GET['city'])) {
-	$appid = "8499bc10de19c0cbe31d89994b60834a";
 	$city_get = $_GET['value'];
-	if (file_exists('cache.txt') && (time() - 300) < filemtime('cache.txt')) {
-		$json_weather = file_get_contents('cache.txt');
-	}
-	else {
-		$json_weather = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=$city_get&lang=ru&units=metric&appid=$appid");
-		file_put_contents('cache.txt', $json_weather);
-	}
-	$data = json_decode($json_weather, true);
-	$temp = $data[main][temp];
-	$desc = $data[weather][0][description];
-	$hum = $data[main][humidity];
-	$wind_speed = $data[wind][speed];
-	$clouds = $data[clouds][all];
-	$pic = $data[weather][0][icon];
-	$logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
+	if (!empty($_GET['value'])) {
+		$appid = "8499bc10de19c0cbe31d89994b60834a";
+		$cache_file = 'cache.txt';
+		$json = file_get_contents($cache_file);
+		$d = json_decode($json, true);
+		$cache_city = $d[name];
+		if (file_exists($cache_file) && (time() - 300) < filemtime($cache_file) && strcmp($city_get, $cache_city) == 0) {
+			$json_weather = file_get_contents($cache_file);
+		}
+		else {$json_weather = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=$city_get&lang=ru&units=metric&appid=$appid");
+			file_put_contents($cache_file, $json_weather);
+		}
+		$data = json_decode($json_weather, true);
+		$temp = $data[main][temp];
+		$desc = $data[weather][0][description];
+		$hum = $data[main][humidity];
+		$wind_speed = $data[wind][speed];
+		$clouds = $data[clouds][all];
+		$pic = $data[weather][0][icon];
+		$logo = "<img src='http://openweathermap.org/img/w/" . $pic . ".png'>";
 	}
 ?>
 
@@ -29,7 +32,6 @@
 	<link href="https://fonts.googleapis.com/css?family=Barlow+Semi+Condensed:400,700|Lato:400,700&amp;subset=latin-ext" rel="stylesheet">
 	<style>
 		* {
-			
 			margin: 0;
 			padding: 0;
 			font-family: 'Lato', sans-serif;
