@@ -1,5 +1,5 @@
 <?php 
-	// error_reporting( E_ERROR );
+	error_reporting( E_ERROR );
 	$city_get = $_GET['value'];
 	if (!empty($_GET['value'])) {
 		$appid = "8499bc10de19c0cbe31d89994b60834a";
@@ -19,6 +19,9 @@
 				$json_weather = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=$city_get&lang=ru&units=metric&appid=$appid");
 				file_put_contents($cache_file, $json_weather);
 			}
+		}
+		else {
+				$json_weather = file_get_contents("http://api.openweathermap.org/data/2.5/weather?q=$city_get&lang=ru&units=metric&appid=$appid");
 		}
 	
 		$data = json_decode($json_weather, true);
